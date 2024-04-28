@@ -1,0 +1,144 @@
+-- Create the USER table
+CREATE TABLE users (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    uuid CHAR(36) NOT NULL,
+    fullname VARCHAR(255) NOT NULL,
+    username VARCHAR(50) NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    profile_logo VARCHAR(255),
+    balance DECIMAL(10, 2) DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP
+);
+
+-- Create the COVERS table
+CREATE TABLE covers (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    uuid CHAR(36) NOT NULL,
+    thumbnail VARCHAR(255),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP
+);
+
+-- Create the BOOKS table
+CREATE TABLE books (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    uuid CHAR(36) NOT NULL,
+    cover_id INT,
+    user_id INT,
+    title VARCHAR(255) NOT NULL,
+    author VARCHAR(255) NOT NULL,
+    total_page INT,
+    publication_year INT,
+    isbn VARCHAR(20),
+    description TEXT,
+    price DECIMAL(10, 2),
+    is_free BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (cover_id) REFERENCES COVERS(id),
+    FOREIGN KEY (user_id) REFERENCES USER(id)
+);
+
+-- Create the BOOK_CATEGORIES table
+CREATE TABLE BOOK_CATEGORIES (
+    book_id INT,
+    category_id INT,
+    FOREIGN KEY (book_id) REFERENCES BOOKS(id),
+    FOREIGN KEY (category_id) REFERENCES CATEGORIES(id)
+);
+
+-- Create the BOOK_DETAILS table
+CREATE TABLE BOOK_DETAILS (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    uuid CHAR(36) NOT NULL,
+    book_id INT,
+    topic_title VARCHAR(255) NOT NULL,
+    content TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP,
+    FOREIGN KEY (book_id) REFERENCES BOOKS(id)
+);
+
+-- Create the FAQS table
+CREATE TABLE FAQS (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    uuid CHAR(36) NOT NULL,
+    question TEXT NOT NULL,
+    answer TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP
+);
+
+-- Create the CATEGORIES table
+CREATE TABLE CATEGORIES (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    uuid CHAR(36) NOT NULL,
+    logo VARCHAR(255),
+    name VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP
+);
+
+-- Create the REVIEWS table
+CREATE TABLE REVIEWS (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    uuid CHAR(36) NOT NULL,
+    user_id INT,
+    book_id INT,
+    rating INT CHECK (rating >= 0 AND rating <= 5),
+    comment TEXT,
+    FOREIGN KEY (user_id) REFERENCES USER(id),
+    FOREIGN KEY (book_id) REFERENCES BOOKS(id)
+);
+
+-- Create the BOOKMARKS table
+CREATE TABLE BOOKMARKS (
+    user_id INT,
+    book_id INT,
+    FOREIGN KEY (user_id) REFERENCES USER(id),
+    FOREIGN KEY (book_id) REFERENCES BOOKS(id)
+);
+
+-- Create the PAYMENTS table
+CREATE TABLE PAYMENTS (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    uuid CHAR(36) NOT NULL,
+    amount DECIMAL(10, 2) NOT NULL,
+    fee DECIMAL(10, 2) NOT NULL,
+    grand_total DECIMAL(10, 2) NOT NULL,
+    address VARCHAR(255),
+    status VARCHAR(20) NOT NULL,
+    user_id INT,
+    book_id INT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES USER(id),
+    FOREIGN KEY (book_id) REFERENCES BOOKS(id)
+);
+
+-- Create the PAYOUTS table
+CREATE TABLE PAYOUTS (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    uuid CHAR(36) NOT NULL,
+    user_id INT,
+    amount DECIMAL(10, 2) NOT NULL,
+    fee DECIMAL(10, 2) NOT NULL,
+    grand_total DECIMAL(10, 2) NOT NULL,
+    account_number VARCHAR(20) NOT NULL,
+    bank_name VARCHAR(255) NOT NULL,
+    account_pic VARCHAR(255),
+    admin_note TEXT,
+    status VARCHAR(20) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES USER(id)
+);

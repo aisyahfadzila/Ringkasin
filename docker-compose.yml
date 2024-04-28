@@ -1,0 +1,50 @@
+version: "3.7"
+services:
+  app:
+    build:
+      args:
+        user: gandhi
+        uid: 1000
+      context: ./
+      dockerfile: Dockerfile
+    image: ringkasin
+    container_name: ringkasin
+    restart: unless-stopped
+    working_dir: /var/www/
+    volumes:
+      - ./:/var/www
+    networks:
+      - ppaw
+
+  db:
+    image: mysql:5.7
+    container_name: travellist-db-nabil
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: "ringkasin"
+      MYSQL_ROOT_PASSWORD: "indonesia11"
+      MYSQL_PASSWORD: "indonesia11"
+      MYSQL_USER: "admin"
+      SERVICE_TAGS: dev
+      SERVICE_NAME: mysql
+      explicit_defaults_for_timestamp: "true"
+    volumes:
+      - ./docker-compose/mysql:/docker-entrypoint-initdb.d
+    networks:
+      - ppaw
+
+  nginx:
+    image: nginx:alpine
+    container_name: ppaw-nginx-nabil
+    restart: unless-stopped
+    ports:
+      - 8001:80
+    volumes:
+      - ./:/var/www
+      - ./docker-compose/nginx:/etc/nginx/conf.d/
+    networks:
+      - ppaw
+
+networks:
+  ppaw:
+    driver: bridge
